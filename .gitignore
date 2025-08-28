@@ -1,0 +1,41 @@
+# Python cache and build files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+build/
+dist/
+
+# Virtual environment (if created inside project)
+.env/
+.venv/
+env/
+venv/
+ENV/
+*.env
+
+# IDE/editor specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# OS specific
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
+
+# Project specific
+*.pdf
+*.db
+*.sqlite3
