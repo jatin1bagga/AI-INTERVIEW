@@ -92,4 +92,6 @@ def make_report():
                      download_name=out_path.name, mimetype="application/pdf")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    import os
+    port = int(os.getenv("PORT", "5000"))
+    app.run(host="0.0.0.0", port=port, debug=True)
