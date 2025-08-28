@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Interview Feedback</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --text: #0f172a;
+      --muted: #e5e7eb;
+      --card: #ffffff;
+      --card-border: #e5e7eb;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --chip: #111827;
+      --bar-clarity: #f59e0b;
+      --bar-pace: #22c55e;
+      --bar-confidence: #8b5cf6;
+      --link: #0a66c2;
+      --link-hover: #084d94;
+      --shadow: 0 8px 24px rgba(0,0,0,0.08);
+      --shadow-hover: 0 12px 28px rgba(0,0,0,0.12);
+      --focus: 0 0 0 3px rgba(37,99,235,0.35);
+    }
+    [data-theme="dark"] {
+      --bg: #0b1220;
+      --text: #e5e7eb;
+      --muted: #1f2937;
+      --card: #111827;
+      --card-border: #1f2937;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --chip: #e5e7eb;
+      --bar-clarity: #fbbf24;
+      --bar-pace: #34d399;
+      --bar-confidence: #a78bfa;
+      --link: #0a66c2;
+      --link-hover: #0b57a7;
+      --shadow: 0 10px 28px rgba(0,0,0,0.35);
+      --shadow-hover: 0 14px 36px rgba(0,0,0,0.45);
+      --focus: 0 0 0 3px rgba(59,130,246,0.45);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Roboto", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+
+    .page {
+      min-height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 14px 22px;
+    }
+
+    .link-btn, .icon-btn {
+      appearance: none;
+      border: 1px solid var(--card-border);
+      background: var(--card);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow);
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, background-color .15s ease;
+    }
+    .link-btn:hover, .icon-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+    .link-btn:focus, .icon-btn:focus { outline: none; box-shadow: var(--shadow-hover), var(--focus); }
+
+    .link-btn {
+      color: #fff;
+      background: var(--link);
+      border-color: transparent;
+      padding-inline: 16px;
+    }
+    .link-btn:hover { background: var(--link-hover); }
+
+    .icon-btn {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      padding: 8px 10px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 28px auto 60px;
+      padding: 0 18px;
+    }
+
+    .shell {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      transition: box-shadow .2s ease, border-color .2s ease;
+    }
+    .shell:hover { box-shadow: var(--shadow-hover); }
+
+    h1 {
+      margin: 6px 0 18px;
+      font-size: 2rem;
+      letter-spacing: .2px;
+    }
+    p.lead {
+      color: #6b7280;
+      margin-top: -6px;
+      margin-bottom: 18px;
+    }
+    [data-theme="dark"] p.lead { color: #9ca3af; }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      margin-top: 12px;
+    }
+    @media (max-width: 640px) {
+      form { grid-template-columns: 1fr; }
+    }
+
+    .file {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 1px dashed var(--card-border);
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text);
+      width: 100%;
+      cursor: pointer;
+      transition: border-color .2s ease, background-color .2s ease;
+    }
+    .file:hover { border-color: var(--accent); background: rgba(37,99,235,0.04); }
+    [data-theme="dark"] .file:hover { background: rgba(59,130,246,0.08); }
+
+    input[type="file"] {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0);
+      white-space: nowrap; border: 0;
+    }
+
+    .primary {
+      border: none;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+      box-shadow: 0 8px 18px rgba(37,99,235,0.25);
+    }
+    .primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .primary:focus { outline: none; box-shadow: var(--focus); }
+
+    .card {
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      background: var(--card);
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 820px) {
+      .row { grid-template-columns: 1fr; }
+    }
+
+    .label { font-weight: 700; margin: 6px 0 6px; }
+
+    .transcript-box {
+      background: transparent;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      max-height: 220px;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+
+    .score { font-weight: 800; }
+
+    .bar-wrap {
+      background: var(--muted);
+      border-radius: 999px;
+      height: 14px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+    .bar {
+      height: 100%;
+      width: 0%;
+      transition: width 1s ease;
+      border-radius: 999px;
+    }
+    #clarity    { background: var(--bar-clarity); }
+    #pace       { background: var(--bar-pace); }
+    #confidence { background: var(--bar-confidence); }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .muted { color: #6b7280; }
+    [data-theme="dark"] .muted { color: #9ca3af; }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .92rem;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <a class="link-btn" href="https://www.linkedin.com/in/jatin-bagga-b726011a7/" target="_blank" rel="noopener noreferrer">
+        LinkedIn
+      </a>
+      <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark / light">🌙</button>
+    </header>
+
+    <main class="container">
+      <section class="shell">
+        <h1>AI Interview Feedback</h1>
+        <p class="lead">Upload your interview audio/video for quick transcription and scoring.</p>
+
+        <form id="uploadForm">
+          <label class="file" for="fileInput">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 15v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4H3l9-9 9 9h-2Zm-7-7.586L6 13h2v5h2v-3h4v3h2v-5h2l-6-5.586Z"/></svg>
+            <span id="fileLabel">Choose a file…</span>
+            <input type="file" id="fileInput" name="file" required />
+          </label>
+          <button class="primary" type="submit">Upload &amp; Analyze</button>
+        </form>
+
+        <div id="result" class="card" style="display:none;">
+          <div class="row">
+            <div>
+              <div class="label">Transcription</div>
+              <div id="transcription" class="transcript-box" aria-live="polite"></div>
+            </div>
+            <div>
+              <div class="label">Sentiment</div>
+              <div class="chip"><span id="sentiment" class="score">–</span></div>
+
+              <div class="label" style="margin-top:14px;">Clarity</div>
+              <div class="bar-wrap" aria-label="Clarity" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <div id="clarity" class="bar"></div>
+              </div>
+
+              <div class="label" style="margin-top:14px;">Pace</div>
+              <div class="bar-wrap" aria-label="Pace" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <div id="pace" class="bar"></div>
+              </div>
+
+              <div class="label" style="margin-top:14px;">Confidence</div>
+              <div class="bar-wrap" aria-label="Confidence" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <div id="confidence" class="bar"></div>
+              </div>
+
+              <div class="label" style="margin-top:16px;">Overall</div>
+              <div class="chip"><span id="overall" class="score">–</span></div>
+
+              <div class="actions">
+                <button id="downloadPdfBtn" class="icon-btn" style="display:none;" type="button">
+                  ⬇️ Download PDF
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ----- Theme: init (system + saved) -----
+    const root = document.documentElement;
+    const toggleBtn = document.getElementById("themeToggle");
+    const saved = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const applyTheme = (mode) => {
+      root.setAttribute("data-theme", mode);
+      toggleBtn.textContent = mode === "dark" ? "☀️" : "🌙";
+      localStorage.setItem("theme", mode);
+    };
+    applyTheme(saved ? saved : (prefersDark ? "dark" : "light"));
+    toggleBtn.addEventListener("click", () => {
+      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      applyTheme(next);
+    });
+
+    // ----- File label -----
+    const fileInput = document.getElementById("fileInput");
+    const fileLabel = document.getElementById("fileLabel");
+    fileInput.addEventListener("change", () => {
+      fileLabel.textContent = fileInput.files?.[0]?.name || "Choose a file…";
+    });
+
+    // ----- Analyze flow -----
+    let lastResult = null;
+    document.getElementById("uploadForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const file = fileInput.files?.[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch("/api/analyze", { method: "POST", body: formData });
+        if (!res.ok) {
+          const err = await res.json().catch(()=>({}));
+          throw new Error(err.error || res.statusText);
+        }
+        const data = await res.json();
+        lastResult = data;
+
+        // Populate UI
+        document.getElementById("transcription").innerText = data.transcription || "—";
+        document.getElementById("sentiment").innerText =
+          (data.sentiment?.label || "Neutral") + (data.sentiment?.score ? ` (${data.sentiment.score})` : "");
+
+        const setBar = (id, value) => {
+          const el = document.getElementById(id);
+          const wrap = el.parentElement;
+          const pct = Math.round((value || 0) * 100);
+          el.style.width = pct + "%";
+          wrap.setAttribute("aria-valuenow", String(pct));
+        };
+
+        setBar("clarity", data.clarity);
+        setBar("pace", data.pace);
+        setBar("confidence", data.confidence);
+
+        document.getElementById("overall").innerText = data.overall ?? "—";
+        document.getElementById("result").style.display = "block";
+        document.getElementById("downloadPdfBtn").style.display = "inline-flex";
+      } catch (err) {
+        alert("Analyze failed: " + err.message);
+      }
+    };
+
+    // ----- Download report -----
+    document.getElementById("downloadPdfBtn").onclick = async () => {
+      if (!lastResult) return;
+      try {
+        const payload = { ...lastResult, username: "Candidate", role: "Interview Practice" };
+        const res = await fetch("/api/report", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(()=>({}));
+          throw new Error(err.error || res.statusText);
+        }
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "Interview_Report.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert("Report generation failed: " + err.message);
+      }
+    };
+  </script>
+</body>
+</html>
